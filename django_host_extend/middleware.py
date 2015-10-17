@@ -15,8 +15,10 @@ class HostExtendMiddleware(object):
             cache.set("host_list", host)
             settings.ALLOWED_HOSTS = ["127.0.0.1"]
         #settings.ALLOWED_HOSTS.extend(set(host).difference(settings.ALLOWED_HOSTS))
-        if request.META['HTTP_HOST'].split(':')[0] not in host:
-            return HttpResponseRedirect(settings.HE_REDIRECT)
+        r_url = getattr(settings, 'HE_REDIRECT', None)
+        if r_url:
+            if request.META['HTTP_HOST'].split(':')[0] not in host:
+                return HttpResponseRedirect(r_url)
         settings.ALLOWED_HOSTS.extend(host)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
@@ -27,4 +29,9 @@ class HostExtendMiddleware(object):
                 HostExtendModel.objects.get(host=http_host[0], is_active=True)
                 cache.set("HostExtend:" + http_host[0], True)
             except ObjectDoesNotExist:
-                return HttpResponseRedirect(settings.HE_REDIRECT)
+                r_url = getattr(settings, 'HE_REDIRECT', None)
+                if r_url:
+                    return HttpResponseRedirect(r_url)
+                else:
+                    return None
+
