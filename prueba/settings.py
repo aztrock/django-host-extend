@@ -26,6 +26,9 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['1.1.1.1']
 
+HE_REDIRECT = "http://centrodigital.co"
+
+
 
 # Application definition
 
